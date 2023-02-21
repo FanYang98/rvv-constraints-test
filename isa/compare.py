@@ -110,6 +110,29 @@ def gencodevmv1r(e,m,v1,v2):
 
     RVTEST_DATA_END
     '''%(e,m,v1,v2)
+
+def gencodevzext(e,m,v1,v2):
+    return '''
+    #include "riscv_test.h"
+    #include "test_macros.h"
+
+    RVTEST_RV64UV
+
+    RVTEST_CODE_BEGIN
+    
+    li t0, 16
+    vsetvli t1, t0, %s,%s,ta,ma
+    vzext.vf8 %s, %s
+
+    TEST_PASSFAIL
+
+    RVTEST_CODE_END
+
+    .data
+    RVTEST_DATA_BEGIN
+
+    RVTEST_DATA_END
+    '''%(e,m,v1,v2)
     
 def gencodevslideup(e,m,v1,v2):
     return '''
@@ -161,6 +184,84 @@ def gencodevlu(e,m,v1,v2):
     RVTEST_DATA_END
     '''%(e,m,v1,v2)
     
+def gencodevsu(e,m,v1,v2):
+    return '''
+    
+    #include "riscv_test.h"
+    #include "test_macros.h"
+
+    RVTEST_RV64UV
+
+    RVTEST_CODE_BEGIN
+    
+    li t0, 16
+    la a5, tdat
+    vsetvli t1, t0, %s,%s,ta,ma
+    vsuxei8.v  %s, (a5), %s
+
+    TEST_PASSFAIL
+
+    RVTEST_CODE_END
+
+    .data
+    RVTEST_DATA_BEGIN
+    tdat:
+        .quad 0x103f8ffefefff
+    RVTEST_DATA_END
+    '''%(e,m,v1,v2)
+    
+def gencodevle(e,m,v1):
+    return '''
+    
+    #include "riscv_test.h"
+    #include "test_macros.h"
+
+    RVTEST_RV64UV
+
+    RVTEST_CODE_BEGIN
+    
+    li t0, 16
+    la a5, tdat
+    vsetvli t1, t0, %s,%s,ta,ma
+    vle8.v  %s, (a5)
+
+    TEST_PASSFAIL
+
+    RVTEST_CODE_END
+
+    .data
+    RVTEST_DATA_BEGIN
+    tdat:
+        .quad 0x103f8ffefefff
+    RVTEST_DATA_END
+    '''%(e,m,v1)
+    
+def gencodevse(e,m,v1):
+    return '''
+    
+    #include "riscv_test.h"
+    #include "test_macros.h"
+
+    RVTEST_RV64UV
+
+    RVTEST_CODE_BEGIN
+    
+    li t0, 16
+    la a5, tdat
+    vsetvli t1, t0, %s,%s,ta,ma
+    vse8.v  %s, (a5)
+
+    TEST_PASSFAIL
+
+    RVTEST_CODE_END
+
+    .data
+    RVTEST_DATA_BEGIN
+    tdat:
+        .quad 0x103f8ffefefff
+    RVTEST_DATA_END
+    '''%(e,m,v1)
+
 def gencodevlre(e,m,v1):
     return '''
     
@@ -251,20 +352,7 @@ for e_set in sew:
                         print("vredand %s %s %s %s %s spike gem5 match error occur" %(e_set, lmul_set, v1, v2, v3))
                     if checkspikeerror("spikenoerrorlog") == True and checkgem5error("gem5errorlog") == False:
                         print("vredand %s %s %s %s %s spike gem5 match error occur" %(e_set, lmul_set, v1, v2, v3))
-for e_set in sew:
-    for lmul_set in lmul:
-        for v1 in vreg:
-            for v2 in vreg:
-                print("run vmv1r %s %s %s %s test" %(e_set, lmul_set, v1, v2))
-                os.system("echo '%s' > ./rv64uv/vaadd.vv_LMUL1SEW8.S" %(gencodevredand(e_set, lmul_set, v1, v2)))
-                os.system("make")
-                os.system(spike_cmd)
-                os.system(gem5_cmd)
-                if checkspikeerror("spikenoerrorlog") == False and checkgem5error("gem5errorlog") == True:
-                    print("vredand %s %s %s %s spike gem5 match error occur" %(e_set, lmul_set, v1, v2))
-                if checkspikeerror("spikenoerrorlog") == True and checkgem5error("gem5errorlog") == False:
-                    print("vredand %s %s %s %s spike gem5 match error occur" %(e_set, lmul_set, v1, v2))
-                    
+                        
 for e_set in sew:
     for lmul_set in lmul:
         for v1 in vreg:
@@ -278,19 +366,62 @@ for e_set in sew:
                     print("vredand %s %s %s %s spike gem5 match error occur" %(e_set, lmul_set, v1, v2))
                 if checkspikeerror("spikenoerrorlog") == True and checkgem5error("gem5errorlog") == False:
                     print("vredand %s %s %s %s spike gem5 match error occur" %(e_set, lmul_set, v1, v2))
+
 for e_set in sew:
     for lmul_set in lmul:
         for v1 in vreg:
             for v2 in vreg:
-                print("run vluxei %s %s %s %s test" %(e_set, lmul_set, v1, v2))
+                print("run vmv1r.v %s %s %s %s test" %(e_set, lmul_set, v1, v2))
+                os.system("echo '%s' > ./rv64uv/vaadd.vv_LMUL1SEW8.S" %(gencodevmv1r(e_set, lmul_set, v1, v2)))
+                os.system("make")
+                os.system(spike_cmd)
+                os.system(gem5_cmd)
+                if checkspikeerror("spikenoerrorlog") == False and checkgem5error("gem5errorlog") == True:
+                    print("vmv1r.v %s %s %s %s spike gem5 match error occur" %(e_set, lmul_set, v1, v2))
+                if checkspikeerror("spikenoerrorlog") == True and checkgem5error("gem5errorlog") == False:
+                    print("vmv1r.v %s %s %s %s spike gem5 match error occur" %(e_set, lmul_set, v1, v2))
+                
+for e_set in sew:
+    for lmul_set in lmul:
+        for v1 in vreg:
+            for v2 in vreg:
+                print("run vzext.vf8 %s %s %s %s test" %(e_set, lmul_set, v1, v2))
+                os.system("echo '%s' > ./rv64uv/vaadd.vv_LMUL1SEW8.S" %(gencodevzext(e_set, lmul_set, v1, v2)))
+                os.system("make")
+                os.system(spike_cmd)
+                os.system(gem5_cmd)
+                if checkspikeerror("spikenoerrorlog") == False and checkgem5error("gem5errorlog") == True:
+                    print("vzext.vf8 %s %s %s %s spike gem5 match error occur" %(e_set, lmul_set, v1, v2))
+                if checkspikeerror("spikenoerrorlog") == True and checkgem5error("gem5errorlog") == False:
+                    print("vzext.vf8 %s %s %s %s spike gem5 match error occur" %(e_set, lmul_set, v1, v2))
+
+for e_set in sew:
+    for lmul_set in lmul:
+        for v1 in vreg:
+            for v2 in vreg:
+                print("run vluxei8.v %s %s %s %s test" %(e_set, lmul_set, v1, v2))
                 os.system("echo '%s' > ./rv64uv/vaadd.vv_LMUL1SEW8.S" %(gencodevlu(e_set, lmul_set, v1, v2)))
                 os.system("make")
                 os.system(spike_cmd)
                 os.system(gem5_cmd)
                 if checkspikeerror("spikenoerrorlog") == False and checkgem5error("gem5errorlog") == True:
-                    print("vredand %s %s %s %s spike gem5 match error occur" %(e_set, lmul_set, v1, v2))
+                    print("vluxei8.v %s %s %s %s spike gem5 match error occur" %(e_set, lmul_set, v1, v2))
                 if checkspikeerror("spikenoerrorlog") == True and checkgem5error("gem5errorlog") == False:
-                    print("vredand %s %s %s %s spike gem5 match error occur" %(e_set, lmul_set, v1, v2))
+                    print("vluxei8.v %s %s %s %s spike gem5 match error occur" %(e_set, lmul_set, v1, v2))
+
+for e_set in sew:
+    for lmul_set in lmul:
+        for v1 in vreg:
+            for v2 in vreg:
+                print("run vsuxei8.v %s %s %s %s test" %(e_set, lmul_set, v1, v2))
+                os.system("echo '%s' > ./rv64uv/vaadd.vv_LMUL1SEW8.S" %(gencodevsu(e_set, lmul_set, v1, v2)))
+                os.system("make")
+                os.system(spike_cmd)
+                os.system(gem5_cmd)
+                if checkspikeerror("spikenoerrorlog") == False and checkgem5error("gem5errorlog") == True:
+                    print("vsuxei8.v %s %s %s %s spike gem5 match error occur" %(e_set, lmul_set, v1, v2))
+                if checkspikeerror("spikenoerrorlog") == True and checkgem5error("gem5errorlog") == False:
+                    print("vsuxei8.v %s %s %s %s spike gem5 match error occur" %(e_set, lmul_set, v1, v2))
 
 for e_set in sew:
     for lmul_set in lmul:
@@ -301,9 +432,35 @@ for e_set in sew:
             os.system(spike_cmd)
             os.system(gem5_cmd)
             if checkspikeerror("spikenoerrorlog") == False and checkgem5error("gem5errorlog") == True:
-                print("vredand %s %s %s spike gem5 match error occur" %(e_set, lmul_set, v1))
+                print("vl1re16.v %s %s %s spike gem5 match error occur" %(e_set, lmul_set, v1))
             if checkspikeerror("spikenoerrorlog") == True and checkgem5error("gem5errorlog") == False:
-                print("vredand %s %s %s spike gem5 match error occur" %(e_set, lmul_set, v1))
+                print("vl1re16.v %s %s %s spike gem5 match error occur" %(e_set, lmul_set, v1))
+                
+for e_set in sew:
+    for lmul_set in lmul:
+        for v1 in vreg:
+            print("run vle %s %s %s test" %(e_set, lmul_set, v1))
+            os.system("echo '%s' > ./rv64uv/vaadd.vv_LMUL1SEW8.S" %(gencodevle(e_set, lmul_set, v1)))
+            os.system("make")
+            os.system(spike_cmd)
+            os.system(gem5_cmd)
+            if checkspikeerror("spikenoerrorlog") == False and checkgem5error("gem5errorlog") == True:
+                print("vle8.v %s %s %s spike gem5 match error occur" %(e_set, lmul_set, v1))
+            if checkspikeerror("spikenoerrorlog") == True and checkgem5error("gem5errorlog") == False:
+                print("vle8.v %s %s %s spike gem5 match error occur" %(e_set, lmul_set, v1))
+
+for e_set in sew:
+    for lmul_set in lmul:
+        for v1 in vreg:
+            print("run vse %s %s %s test" %(e_set, lmul_set, v1))
+            os.system("echo '%s' > ./rv64uv/vaadd.vv_LMUL1SEW8.S" %(gencodevse(e_set, lmul_set, v1)))
+            os.system("make")
+            os.system(spike_cmd)
+            os.system(gem5_cmd)
+            if checkspikeerror("spikenoerrorlog") == False and checkgem5error("gem5errorlog") == True:
+                print("vse8.v %s %s %s spike gem5 match error occur" %(e_set, lmul_set, v1))
+            if checkspikeerror("spikenoerrorlog") == True and checkgem5error("gem5errorlog") == False:
+                print("vse8.v %s %s %s spike gem5 match error occur" %(e_set, lmul_set, v1))
 
 
                 
