@@ -15,9 +15,9 @@ insns_vs = ['vredand']
 insns_vs_suffixs = ['.vs']
 
 # spike --isa=rv64gcv --varch=vlen:256,elen:64 /your/pk/path /your/bin/path > spikenoerrorlog 2>spikeerrorlog
-spike_cmd = "spike --isa=rv64gcv --varch=vlen:256,elen:64 /work/yangfan/riscv-crypto/build/riscv-pk-riscv64-unknown-elf/pk /work/yangfan/riscv-tests-upstream/rvv-constraints-test/isa/rv64uv-ps-vaadd.vv_LMUL1SEW8 > spikenoerrorlog 2>spikeerrorlog"
+spike_cmd = ""
 # /your/gem5.opt/path /your/gem5/se.py --cmd=/your/bin/path  > gem5noerrorlog 2>gem5errorlog
-gem5_cmd = "/home/yangfan/plct-gem5/build/RISCV/gem5.opt /home/yangfan/plct-gem5/configs/example/se.py --cmd=/work/yangfan/riscv-tests-upstream/rvv-constraints-test/isa/rv64uv-ps-vaadd.vv_LMUL1SEW8 --cpu-type=O3CPU --caches > gem5noerrorlog 2>gem5errorlog"
+gem5_cmd = ""
 
 def gencodevredand(e,m,v1,v2,v3):
     return '''

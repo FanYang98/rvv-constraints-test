@@ -93,20 +93,3 @@ clean:
 	rm -rf $(tests_out)
 	rm -rf $(tests32_out)
 	# rm -rf rv64uv
-
-vfwred:
-	/work/yangfan/plct-gem5/build/RISCV/gem5.opt \
-	/work/yangfan/plct-gem5/configs/example/se.py \
-	--cmd="/work/yangfan/riscv-tests-upstream/vwred/riscv-tests-upstream/isa/rv64uv-ps-vfwredosum.vs_LMUL1SEW32"
-
-vwred:
-	/work/yangfan/plct-gem5/build/RISCV/gem5.opt \
-	/work/yangfan/plct-gem5/configs/example/se.py \
-	--cpu-type=O3CPU --caches \
-	--cmd="/work/yangfan/riscv-tests-upstream/vwred/riscv-tests-upstream/isa/rv64uv-ps-vwredsum.vs_LMUL1SEW32"
-
-spike:
-	spike --isa=rv64gcv --varch=vlen:256,elen:64 /work/yangfan/riscv-crypto/build/riscv-pk-riscv64-unknown-elf/pk /work/yangfan/riscv-tests-upstream/rvv-constraints-test/isa/rv64uv-ps-vaadd.vv_LMUL1SEW8
-
-gem5:
-	/home/yangfan/plct-gem5/build/RISCV/gem5.opt /home/yangfan/plct-gem5/configs/example/se.py --cmd=/work/yangfan/riscv-tests-upstream/rvv-constraints-test/isa/rv64uv-ps-vaadd.vv_LMUL1SEW8 --cpu-type=O3CPU --caches
